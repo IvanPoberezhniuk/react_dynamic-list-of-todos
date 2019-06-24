@@ -1,2 +1,2 @@
 - [Preview](http://mag1ckdrak0n.github.io/react_dynamic-list-of-todos)
-- [Pullrequest](https://github.com/mag1ckdrak0n/react_dynamic-list-of-todos/pull/1/files)
+- [Pullrequest](https://github.com/mag1ckdrak0n/react_dynamic-list-of-todos/pull/2/files)
