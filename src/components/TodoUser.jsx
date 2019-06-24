@@ -1,11 +1,14 @@
-import React, { Component } from "react";
+import React from "react";
 
-import React, { Component } from "react";
+let TodoUser = props => {
+  let { person } = props;
 
-class TodoUser extends Component {
-  render() {
-    return <div />;
-  }
-}
+  return (
+    <>
+      <td>{person.name}</td>
+      <td>{person.email}</td>
+    </>
+  );
+};
 
 export default TodoUser;

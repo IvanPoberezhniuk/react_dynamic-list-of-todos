@@ -1,36 +1,42 @@
 import React, { Component } from "react";
 import TodoItem from "./TodoItem";
 
-const peopleDataUrl = "https://jsonplaceholder.typicode.com/users";
+let peopleDataUrl = "https://jsonplaceholder.typicode.com/users";
+let todoDataUrl = "https://jsonplaceholder.typicode.com/todos";
 
 class TodoList extends Component {
   state = {
-    data: []
+    todoData: [],
+    peopleData: []
   };
 
-  async componentDidMount() {
-    fetch(peopleDataUrl)
-      .then(response => response.json())
+  loadData = () => {
+    Promise.all([fetch(todoDataUrl), fetch(peopleDataUrl)])
+      .then(responses => Promise.all(responses.map(res => res.json())))
       .then(jsonData => {
         this.setState({
-          data: jsonData
+          todoData: jsonData[0],
+          peopleData: jsonData[1]
         });
       });
-  }
+  };
 
   render() {
     return (
-      <div className="todo">
-        <ul className="todo__PeopleList">
-          {this.state.data.map(person => (
-            <li className="todo__row" key={person.id}>
-              <span>Name: {person.name}</span>
-              
-              <TodoItem todoData={this.state.todoData} id={person.id} />
-            </li>
-          ))}
-        </ul>
-      </div>
+      <>
+        {this.state.todoData.length ? (
+          <table>
+            <TodoItem
+              todoData={this.state.todoData}
+              peopleData={this.state.peopleData}
+            />
+          </table>
+        ) : (
+          <button className="loadDataButton" onClick={this.loadData}>
+            Load...( ͡° ͜ʖ ͡°)
+          </button>
+        )}
+      </>
     );
   }
 }

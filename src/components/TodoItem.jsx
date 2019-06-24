@@ -1,70 +1,34 @@
-import React, { Component } from "react";
+import React from "react";
+import TodoUser from "./TodoUser";
 
-const todoUrl = "https://jsonplaceholder.typicode.com/todos";
+let TodoItem = props => {
+  let { todoData, peopleData } = props;
 
-class TodoItem extends Component {
-  state = {
-    todoData: this.props.todoData,
-    buttonText: "(❁´◡`❁)",
-    buttonStatus: false
-  };
+  return (
+    <>
+      <thead>
+        <tr>
+          <td>Id</td>
+          <td>Title</td>
+          <td>Name</td>
+          <td>Email</td>
+        </tr>
+      </thead>
+      <tbody>
+        {todoData.map(task => {
+          let person = peopleData.find(person => person.id === task.userId);
 
-  getUserTodoData = (event, id) => {
-    let buttonText;
-
-    this.state.buttonStatus
-      ? (buttonText = "(❁´◡`❁)")
-      : (buttonText = "((⊙﹏⊙))");
-
-    if (!this.state.buttonStatus) {
-      fetch(todoUrl)
-        .then(response => response.json())
-        .then(jsonData => jsonData.filter(data => data.userId === id))
-        .then(filteredData =>
-          this.setState(prevState => ({
-            todoData: filteredData,
-            buttonText: buttonText,
-            buttonStatus: !prevState.buttonStatus
-          }))
-        );
-    } else {
-      this.setState(prevState => ({
-        todoData: null,
-        buttonText: buttonText,
-        buttonStatus: !prevState.buttonStatus
-      }));
-    }
-  };
-
-  render() {
-    return (
-      <>
-        <button
-          className="todo__button-GET"
-          type="button"
-          onClick={event => this.getUserTodoData(event, this.props.id)}
-        >
-          {this.state.buttonText}
-        </button>
-        {this.state.todoData ? (
-          <ul className="todo__taskList">
-            {this.state.todoData.map(task => (
-              <li className="todo__task" key={task.id}>
-                <input
-                  className="todo__checkbox"
-                  type="checkbox"
-                  defaultChecked={task.completed}
-                />
-                {task.title}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          false
-        )}
-      </>
-    );
-  }
-}
+          return (
+            <tr key={task.id}>
+              <td>{task.id}</td>
+              <td>{task.title}</td>
+              <TodoUser person={person} />
+            </tr>
+          );
+        })}
+      </tbody>
+    </>
+  );
+};
 
 export default TodoItem;
