@@ -1,12 +1,12 @@
 import React from "react";
 
-let TodoUser = props => {
+const TodoUser = props => {
   let { person } = props;
 
   return (
     <>
-      <td>{person.name}</td>
-      <td>{person.email}</td>
+      <td className="todos__td">{person.name}</td>
+      <td className="todos__td">{person.email}</td>
     </>
   );
 };

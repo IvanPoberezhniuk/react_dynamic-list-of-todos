@@ -8,38 +8,26 @@ html {
   background-color: thistle;
 }
 
-button {
-  border: none;
-  background-color: rgb(158, 209, 209);
-}
-
-button:hover {
-  cursor: pointer;
-}
-
-button:focus {
-  outline: 0;
-}
-
 .App {
   text-align: center;
 }
 
-tr {
+.todo__row {
   margin: 1px;
 }
 
-td {
+.todos__td {
   padding: 2px;
   background-color: rgb(170, 200, 240);
 }
 
-td:hover {
+.todos__td:hover,
+.todos__th:hover {
   cursor: pointer;
   background-color: rgb(144, 188, 241);
 }
 
-thead > tr > td {
+.todos__th {
   background-color: rgb(118, 159, 209);
 }
 
@@ -49,6 +37,7 @@ thead > tr > td {
 }
 
 .loadDataButton {
+  border: none;
   margin-top: 20px;
   height: 100px;
   width: 200px;
@@ -60,6 +49,7 @@ thead > tr > td {
 }
 
 .loadDataButton:hover {
+  cursor: pointer;
   background-color: rgb(124, 180, 248);
   transition-duration: 0.1s;
   transform: rotate(-5deg);
