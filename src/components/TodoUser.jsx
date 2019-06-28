@@ -1,12 +1,10 @@
 import React from "react";
 
-const TodoUser = props => {
-  let { person } = props;
-
+const TodoUser = ({ user }) => {
   return (
     <>
-      <td className="todos__td">{person.name}</td>
-      <td className="todos__td">{person.email}</td>
+      <td className="todos__td">{user.name}</td>
+      <td className="todos__td">{user.email}</td>
     </>
   );
 };
