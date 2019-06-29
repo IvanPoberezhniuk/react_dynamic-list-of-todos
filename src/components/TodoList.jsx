@@ -27,13 +27,11 @@ class TodoList extends Component {
         [FILTER.BY_TITLE]: "asc",
         [FILTER.BY_NAME]: "asc",
         [FILTER.BY_EMAIL]: "asc"
-      }
+      },
+      buttonDisabled: false
     };
 
     this.handleSort = sortField => {
-      console.log(sortField);
-      console.log(this.state.direction);
-
       this.setState(prevState => {
         return {
           sortField: sortField,
@@ -47,11 +45,9 @@ class TodoList extends Component {
   }
 
   loadTodos = async event => {
-    event.target.disabled = true;
-    event.target.blur();
-
     this.setState({
-      buttonInnerText: "Loading..."
+      buttonInnerText: "Loading...",
+      buttonDisabled: true
     });
 
     try {
@@ -77,41 +73,47 @@ class TodoList extends Component {
     }));
   };
 
-  sortBy = FILTER_BY => {
+  sortBy = filterBy => {
     const callbackMap = {
       [FILTER.BY_ID]: (a, b) => {
-        return this.state.direction[FILTER_BY] === "asc"
+        return this.state.direction[filterBy] === "asc"
           ? parseFloat(a.id) - parseFloat(b.id)
           : parseFloat(b.id) - parseFloat(a.id);
       },
 
       [FILTER.BY_COMPLETE]: (a, b) => {
-        return this.state.direction[FILTER_BY] === "asc"
+        return this.state.direction[filterBy] === "asc"
           ? a.completed - b.completed
           : b.completed - a.completed;
       },
       [FILTER.BY_TITLE]: (a, b) => {
-        return this.state.direction[FILTER_BY] === "asc"
+        return this.state.direction[filterBy] === "asc"
           ? a.title.localeCompare(b.title)
           : b.title.localeCompare(a.title);
       },
       [FILTER.BY_NAME]: (a, b) => {
-        return this.state.direction[FILTER_BY] === "asc"
+        return this.state.direction[filterBy] === "asc"
           ? a.user.name.localeCompare(b.user.name)
           : b.user.name.localeCompare(a.user.name);
       },
       [FILTER.BY_EMAIL]: (a, b) => {
-        return this.state.direction[FILTER_BY] === "asc"
+        return this.state.direction[filterBy] === "asc"
           ? a.user.email.localeCompare(b.user.email)
           : b.user.email.localeCompare(a.user.email);
       }
     };
 
-    return this.state.todos.sort(callbackMap[FILTER_BY]);
+    return this.state.todos.sort(callbackMap[filterBy]);
   };
 
   render() {
-    const { sortField, buttonInnerText, isLoaded, buttonStyle } = this.state;
+    const {
+      sortField,
+      buttonInnerText,
+      isLoaded,
+      buttonStyle,
+      buttonDisabled
+    } = this.state;
     const preparedTodos = this.sortBy(sortField);
 
     return (
@@ -167,7 +169,8 @@ class TodoList extends Component {
         ) : (
           <button
             className={"loadTodosButton " + buttonStyle}
-            onClick={event => this.loadTodos(event)}
+            onClick={this.loadTodos}
+            disabled={buttonDisabled}
           >
             {buttonInnerText}
           </button>
