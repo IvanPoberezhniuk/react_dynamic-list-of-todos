@@ -30,19 +30,18 @@ class TodoList extends Component {
       },
       buttonDisabled: false
     };
-
-    this.handleSort = sortField => {
-      this.setState(prevState => {
-        return {
-          sortField: sortField,
-          direction: Object.assign(prevState.direction, {
-            [sortField]:
-              prevState.direction[sortField] === "asc" ? "desc" : "asc"
-          })
-        };
-      });
-    };
   }
+
+  handleSort = sortField => {
+    this.setState(prevState => {
+      return {
+        sortField,
+        direction: Object.assign(prevState.direction, {
+          [sortField]: prevState.direction[sortField] === "asc" ? "desc" : "asc"
+        })
+      };
+    });
+  };
 
   loadTodos = async event => {
     this.setState({
@@ -52,10 +51,10 @@ class TodoList extends Component {
 
     try {
       const [todos, users] = await Promise.all([getTodos(), getUsers()]);
-      const item = this.joinTodosAndUsers(todos, users);
+      const joinedTodosAndusers = this.joinTodosAndUsers(todos, users);
 
       this.setState({
-        todos: item,
+        todos: joinedTodosAndusers,
         isLoaded: true
       });
     } catch (err) {
