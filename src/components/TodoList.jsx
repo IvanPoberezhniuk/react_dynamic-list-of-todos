@@ -43,7 +43,7 @@ class TodoList extends Component {
     });
   };
 
-  loadTodos = async event => {
+  loadTodos = async () => {
     this.setState({
       buttonInnerText: "Loading...",
       buttonDisabled: true
