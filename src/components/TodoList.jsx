@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchTodos, toggleTodo } from '../actions/todoActions';
+import { fetchTodos, toggleTodo, deleteTodo } from '../actions/todoActions';
 
 import TodoItem from './TodoItem';
 import TodoUser from './TodoUser';
@@ -74,7 +74,7 @@ class TodoList extends Component {
   };
 
   render() {
-    const { sortField, buttonInnerText, buttonStyle } = this.state;
+    const { sortField, buttonInnerText } = this.state;
 
     const preparedTodos = this.sortBy(sortField);
 
@@ -112,6 +112,7 @@ class TodoList extends Component {
                 >
                   Email
                 </th>
+                <th className="todos__th">DEL</th>
               </tr>
             </thead>
             <tbody>
@@ -123,7 +124,7 @@ class TodoList extends Component {
                       onSort={this.handleSort}
                       toggleTodo={this.props.toggleTodo}
                     />
-                    <TodoUser user={task.user} />
+                    <TodoUser task={task} deleteTodo={this.props.deleteTodo} />
                   </tr>
                 );
               })}
@@ -154,7 +155,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   fetchTodos: () => dispatch(fetchTodos()),
-  toggleTodo: id => dispatch(toggleTodo(id))
+  toggleTodo: id => dispatch(toggleTodo(id)),
+  deleteTodo: id => dispatch(deleteTodo(id))
 });
 
 export default connect(

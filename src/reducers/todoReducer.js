@@ -22,6 +22,11 @@ const todoReducer = function(state = initialState, action) {
       return { ...state, isLoading: !state.isLoading };
     case TODO.FETCH_ERROR:
       return { ...state, error: action.error };
+    case TODO.DELETE:
+      return {
+        ...state,
+        todos: state.todos.filter(todo => todo.id !== action.id)
+      };
     default:
       return state;
   }

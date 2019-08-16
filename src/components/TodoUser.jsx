@@ -1,10 +1,13 @@
-import React from "react";
+import React from 'react';
 
-const TodoUser = ({ user }) => {
+const TodoUser = ({ task, deleteTodo }) => {
   return (
     <>
-      <td className="todos__td">{user.name}</td>
-      <td className="todos__td">{user.email}</td>
+      <td className="todos__td">{task.user.name}</td>
+      <td className="todos__td">{task.user.email}</td>
+      <td className="todos__td">
+        <button onClick={() => deleteTodo(task.id)}>X</button>
+      </td>
     </>
   );
 };

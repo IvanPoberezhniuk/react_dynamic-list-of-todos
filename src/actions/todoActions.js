@@ -18,7 +18,7 @@ export const fetchTodos = () => dispatch => {
           type: TODO.FETCH,
           payload: todos
         });
-        
+
         dispatch({ type: TODO.IS_LOADED });
       })
       .catch(err => {
@@ -33,5 +33,10 @@ export const fetchTodos = () => dispatch => {
 
 export const toggleTodo = id => ({
   type: TODO.IS_COMPLETED,
+  id
+});
+
+export const deleteTodo = id => ({
+  type: TODO.DELETE,
   id
 });
