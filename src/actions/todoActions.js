@@ -3,32 +3,35 @@ import { getTodos, getUsers } from '../api/api';
 import { joinTodosAndUsers } from '../api/helpers';
 
 export const fetchTodos = () => dispatch => {
-  Promise.all([getTodos(), getUsers()])
-    .then(response => {
-      const [todos, users] = response;
-      const joinedTodosAndUsers = joinTodosAndUsers(todos, users);
-      return joinedTodosAndUsers;
-    })
-    .then(todos => {
-      dispatch({
-        type: TODO.FETCH,
-        payload: todos
-      });
-    })
-    .then(
-      dispatch({
-        type: TODO.IS_LOADED
+  dispatch({ type: TODO.IS_LOADING });
+
+  // That setTimeout - response simulation
+  setTimeout(() => {
+    Promise.all([getTodos(), getUsers()])
+      .then(response => {
+        const [todos, users] = response;
+        const joinedTodosAndUsers = joinTodosAndUsers(todos, users);
+        return joinedTodosAndUsers;
       })
-    )
-    .catch(err =>
-      dispatch({
-        type: TODO.FETCH_ERROR,
-        error: err
+      .then(todos => {
+        dispatch({
+          type: TODO.FETCH,
+          payload: todos
+        });
+        
+        dispatch({ type: TODO.IS_LOADED });
       })
-    );
+      .catch(err => {
+        dispatch({
+          type: TODO.FETCH_ERROR,
+          error: err.message
+        });
+      })
+      .finally(dispatch({ type: TODO.IS_LOADING }));
+  }, 1444);
 };
 
 export const toggleTodo = id => ({
-  type: TODO.TOGGLE,
+  type: TODO.IS_COMPLETED,
   id
 });

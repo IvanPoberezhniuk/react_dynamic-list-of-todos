@@ -24,11 +24,8 @@ class TodoList extends Component {
       [FILTER.BY_TITLE]: 'asc',
       [FILTER.BY_NAME]: 'asc',
       [FILTER.BY_EMAIL]: 'asc'
-    },
-    buttonDisabled: false
+    }
   };
-
-  componentDidMount() {}
 
   handleSort = sortField => {
     this.setState(prevState => {
@@ -77,15 +74,10 @@ class TodoList extends Component {
   };
 
   render() {
-    const {
-      sortField,
-      buttonInnerText,
-      buttonStyle,
-      buttonDisabled
-    } = this.state;
+    const { sortField, buttonInnerText, buttonStyle } = this.state;
 
     const preparedTodos = this.sortBy(sortField);
-    
+
     return (
       <>
         {this.props.isLoaded ? (
@@ -139,11 +131,13 @@ class TodoList extends Component {
           </table>
         ) : (
           <button
-            className={'loadTodosButton ' + buttonStyle}
+            className={
+              this.props.error ? 'loadTodosButton error' : 'loadTodosButton '
+            }
             onClick={this.props.fetchTodos}
-            disabled={buttonDisabled}
+            disabled={this.props.isLoading ? true : false}
           >
-            {buttonInnerText}
+            {!this.props.error ? buttonInnerText : this.props.error}
           </button>
         )}
       </>
@@ -153,7 +147,9 @@ class TodoList extends Component {
 
 const mapStateToProps = state => ({
   todos: state.todoReducer.todos,
-  isLoaded: state.todoReducer.isLoaded
+  isLoaded: state.todoReducer.isLoaded,
+  isLoading: state.todoReducer.isLoading,
+  error: state.todoReducer.error
 });
 
 const mapDispatchToProps = dispatch => ({
