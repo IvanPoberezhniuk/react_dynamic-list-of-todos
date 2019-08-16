@@ -1,123 +1,96 @@
-import React, { Component } from "react";
-import { getTodos, getUsers } from "../api/api";
-import TodoItem from "./TodoItem";
-import TodoUser from "./TodoUser";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { fetchTodos, toggleTodo, deleteTodo } from '../actions/todoActions';
+
+import TodoItem from './TodoItem';
+import TodoUser from './TodoUser';
 
 const FILTER = {
-  BY_ID: "id",
-  BY_COMPLETE: "completed",
-  BY_TITLE: "title",
-  BY_NAME: "name",
-  BY_EMAIL: "email"
+  BY_ID: 'id',
+  BY_COMPLETE: 'completed',
+  BY_TITLE: 'title',
+  BY_NAME: 'name',
+  BY_EMAIL: 'email'
 };
 
 class TodoList extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      todos: [],
-      isLoaded: false,
-      buttonStyle: "",
-      buttonInnerText: "Click...( ͡° ͜ʖ ͡°)",
-      sortField: FILTER.BY_ID,
-      direction: {
-        [FILTER.BY_ID]: "asc",
-        [FILTER.BY_COMPLETE]: "asc",
-        [FILTER.BY_TITLE]: "asc",
-        [FILTER.BY_NAME]: "asc",
-        [FILTER.BY_EMAIL]: "asc"
-      },
-      buttonDisabled: false
-    };
-  }
+  state = {
+    buttonStyle: '',
+    buttonInnerText: 'Click...( ͡° ͜ʖ ͡°)',
+    sortField: FILTER.BY_ID,
+    direction: {
+      [FILTER.BY_ID]: 'asc',
+      [FILTER.BY_COMPLETE]: 'asc',
+      [FILTER.BY_TITLE]: 'asc',
+      [FILTER.BY_NAME]: 'asc',
+      [FILTER.BY_EMAIL]: 'asc'
+    }
+  };
 
   handleSort = sortField => {
     this.setState(prevState => {
       return {
         sortField,
         direction: Object.assign(prevState.direction, {
-          [sortField]: prevState.direction[sortField] === "asc" ? "desc" : "asc"
+          [sortField]: prevState.direction[sortField] === 'asc' ? 'desc' : 'asc'
         })
       };
     });
   };
 
-  loadTodos = async () => {
-    this.setState({
-      buttonInnerText: "Loading...",
-      buttonDisabled: true
-    });
-
-    try {
-      const [todos, users] = await Promise.all([getTodos(), getUsers()]);
-      const joinedTodosAndusers = this.joinTodosAndUsers(todos, users);
-
-      this.setState({
-        todos: joinedTodosAndusers,
-        isLoaded: true
-      });
-    } catch (err) {
-      this.setState({
-        buttonStyle: "error",
-        buttonInnerText: `${err.message}`
-      });
-    }
-  };
-
-  joinTodosAndUsers = (todos, users) => {
-    return todos.map(todo => ({
-      ...todo,
-      user: users.find(user => user.id === todo.userId)
-    }));
-  };
-
   sortBy = filterBy => {
     const callbackMap = {
       [FILTER.BY_ID]: (a, b) => {
-        return this.state.direction[filterBy] === "asc"
+        return this.state.direction[filterBy] === 'asc'
           ? parseFloat(a.id) - parseFloat(b.id)
           : parseFloat(b.id) - parseFloat(a.id);
       },
 
       [FILTER.BY_COMPLETE]: (a, b) => {
-        return this.state.direction[filterBy] === "asc"
+        return this.state.direction[filterBy] === 'asc'
           ? a.completed - b.completed
           : b.completed - a.completed;
       },
       [FILTER.BY_TITLE]: (a, b) => {
-        return this.state.direction[filterBy] === "asc"
+        return this.state.direction[filterBy] === 'asc'
           ? a.title.localeCompare(b.title)
           : b.title.localeCompare(a.title);
       },
       [FILTER.BY_NAME]: (a, b) => {
-        return this.state.direction[filterBy] === "asc"
+        return this.state.direction[filterBy] === 'asc'
           ? a.user.name.localeCompare(b.user.name)
           : b.user.name.localeCompare(a.user.name);
       },
       [FILTER.BY_EMAIL]: (a, b) => {
-        return this.state.direction[filterBy] === "asc"
+        return this.state.direction[filterBy] === 'asc'
           ? a.user.email.localeCompare(b.user.email)
           : b.user.email.localeCompare(a.user.email);
       }
     };
 
-    return this.state.todos.sort(callbackMap[filterBy]);
+    const data = this.props.todos || [];
+
+    return data.sort(callbackMap[filterBy]);
+  };
+
+  setButtonInnerText = (error, isLoading, isLoaded) => {
+    if (error) {
+      return error;
+    } else if (isLoaded || isLoading) {
+      return 'Loading...';
+    } else {
+      return 'Click...( ͡° ͜ʖ ͡°)';
+    }
   };
 
   render() {
-    const {
-      sortField,
-      buttonInnerText,
-      isLoaded,
-      buttonStyle,
-      buttonDisabled
-    } = this.state;
+    const { sortField } = this.state;
+
     const preparedTodos = this.sortBy(sortField);
 
     return (
       <>
-        {isLoaded ? (
+        {this.props.isLoaded ? (
           <table>
             <thead>
               <tr className="todo__row">
@@ -130,10 +103,7 @@ class TodoList extends Component {
                 <th
                   className="todos__th"
                   onClick={() => this.handleSort(FILTER.BY_COMPLETE)}
-                >
-                  {/* isComplete symbol */}
-                  &#10004;
-                </th>
+                />
                 <th
                   className="todos__th"
                   onClick={() => this.handleSort(FILTER.BY_TITLE)}
@@ -152,14 +122,27 @@ class TodoList extends Component {
                 >
                   Email
                 </th>
+                <th className="todos__th">DEL</th>
               </tr>
             </thead>
             <tbody>
               {preparedTodos.map(task => {
                 return (
                   <tr className="todo__row" key={task.id}>
-                    <TodoItem task={task} onSort={this.handleSort} />
-                    <TodoUser user={task.user} />
+                    <TodoItem
+                      task={task}
+                      onSort={this.handleSort}
+                      toggleTodo={this.props.toggleTodo}
+                    />
+                    <TodoUser
+                      user={task.user}
+                      deleteTodo={this.props.deleteTodo}
+                    />
+                    <td className="todos__td">
+                      <button className='todo__btn-del' onClick={() => this.props.deleteTodo(task.id)}>
+                        X
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -167,11 +150,18 @@ class TodoList extends Component {
           </table>
         ) : (
           <button
-            className={"loadTodosButton " + buttonStyle}
-            onClick={this.loadTodos}
-            disabled={buttonDisabled}
+            className={
+              this.props.error ? 'loadTodosButton error' : 'loadTodosButton '
+            }
+            onClick={this.props.fetchTodos}
+            disabled={this.props.isLoading ? true : false}
           >
-            {buttonInnerText}
+            {/* {!this.props.error ? buttonInnerText : this.props.error} */}
+            {this.setButtonInnerText(
+              this.props.error,
+              this.props.isLoading,
+              this.props.isLoaded
+            )}
           </button>
         )}
       </>
@@ -179,4 +169,20 @@ class TodoList extends Component {
   }
 }
 
-export default TodoList;
+const mapStateToProps = state => ({
+  todos: state.todoReducer.todos,
+  isLoaded: state.todoReducer.isLoaded,
+  isLoading: state.todoReducer.isLoading,
+  error: state.todoReducer.error
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchTodos: () => dispatch(fetchTodos()),
+  toggleTodo: id => dispatch(toggleTodo(id)),
+  deleteTodo: id => dispatch(deleteTodo(id))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TodoList);
