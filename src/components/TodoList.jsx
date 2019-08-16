@@ -73,8 +73,18 @@ class TodoList extends Component {
     return data.sort(callbackMap[filterBy]);
   };
 
+  setButtonInnerText = (error, isLoading, isLoaded) => {
+    if (error) {
+      return error;
+    } else if (isLoaded || isLoading) {
+      return 'Loading...';
+    } else {
+      return 'Click...( ͡° ͜ʖ ͡°)';
+    }
+  };
+
   render() {
-    const { sortField, buttonInnerText } = this.state;
+    const { sortField } = this.state;
 
     const preparedTodos = this.sortBy(sortField);
 
@@ -124,7 +134,15 @@ class TodoList extends Component {
                       onSort={this.handleSort}
                       toggleTodo={this.props.toggleTodo}
                     />
-                    <TodoUser task={task} deleteTodo={this.props.deleteTodo} />
+                    <TodoUser
+                      user={task.user}
+                      deleteTodo={this.props.deleteTodo}
+                    />
+                    <td className="todos__td">
+                      <button className='todo__btn-del' onClick={() => this.props.deleteTodo(task.id)}>
+                        X
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -138,7 +156,12 @@ class TodoList extends Component {
             onClick={this.props.fetchTodos}
             disabled={this.props.isLoading ? true : false}
           >
-            {!this.props.error ? buttonInnerText : this.props.error}
+            {/* {!this.props.error ? buttonInnerText : this.props.error} */}
+            {this.setButtonInnerText(
+              this.props.error,
+              this.props.isLoading,
+              this.props.isLoaded
+            )}
           </button>
         )}
       </>
